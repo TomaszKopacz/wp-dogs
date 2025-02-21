@@ -21,9 +21,4 @@ object BreedsListContract {
     interface Routing {
         fun goToBreed(dog: Breed): Completable
     }
-
-    interface Interactor {
-        fun getBreeds(): Single<List<Breed>>
-        fun reportError(error: Throwable): Completable
-    }
 }

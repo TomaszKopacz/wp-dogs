@@ -12,13 +12,7 @@ import okhttp3.OkHttpClient
 @InstallIn(ActivityComponent::class)
 abstract class BreedsListModule {
     @Binds
-    abstract fun bindPresenter(presenter: BreedsListPresenter): BreedsListContract.Presenter
-
-    @Binds
     abstract fun bindRouting(routing: BreedsListRouting): BreedsListContract.Routing
-
-    @Binds
-    abstract fun bindInteractor(interactor: BreedsListInteractor): BreedsListContract.Interactor
 
     companion object {
         @Provides
