@@ -22,6 +22,14 @@ abstract class BreedsListModule {
 
     companion object {
         @Provides
+        fun provideGetBreedsListUseCase(
+            okHttpClient: OkHttpClient,
+            json: Json
+        ): GetBreedsListUseCase {
+            return GetBreedsListUseCase(okHttpClient, json)
+        }
+
+        @Provides
         fun provideOkHttpClient(): OkHttpClient {
             return OkHttpClient.Builder()
                 .build()
