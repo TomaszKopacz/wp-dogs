@@ -44,7 +44,7 @@ internal class BreedsListViewModel @Inject constructor(
                 .flowOn(Dispatchers.IO)
                 .catch { error ->
                     emitState { state -> state.copy(isError = true) }
-                    reportBreedsListFetchError(error)
+                    reportBreedsListError(error)
                 }
                 .catch {
                     emitState { state -> state.copy(isError = true) }
@@ -59,7 +59,7 @@ internal class BreedsListViewModel @Inject constructor(
         is BreedSelected -> emitAction(GoToBreedDetails(intent.breed))
     }
 
-    private fun reportBreedsListFetchError(error: Throwable): Flow<Unit> =
+    private fun reportBreedsListError(error: Throwable): Flow<Unit> =
         getBreedsListUseCase.reportError(error)
             .flowOn(Dispatchers.IO)
             .catch {

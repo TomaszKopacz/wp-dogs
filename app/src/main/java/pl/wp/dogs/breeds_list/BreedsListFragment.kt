@@ -1,103 +1,67 @@
 package pl.wp.dogs.breeds_list
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
-import androidx.core.view.setPadding
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import io.reactivex.Observable
-import io.reactivex.disposables.SerialDisposable
-import io.reactivex.subjects.BehaviorSubject
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dagger.hilt.android.AndroidEntryPoint
 import pl.wp.dogs.R
-import javax.inject.Inject
+import pl.wp.dogs.breeds_list.BreedsListAction.GoToBreedDetails
+import pl.wp.dogs.breeds_list.BreedsListIntent.BreedSelected
 
-class BreedsListFragment @Inject constructor(private val presenter: BreedsListContract.Presenter) :
-    Fragment(R.layout.fragment_breeds_list), BreedsListContract.View {
-    private val breedsSubject = BehaviorSubject.createDefault(emptyList<Breed>())
-    private val breedClicksSubject = BehaviorSubject.create<Breed>()
+@AndroidEntryPoint
+class BreedsListFragment : Fragment(R.layout.fragment_breeds_list) {
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        presenter.onAttach(this)
-    }
-
-    override fun onDetach() {
-        presenter.onDetach()
-        super.onDetach()
-    }
+    private val viewModel: BreedsListViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.findViewById<RecyclerView>(R.id.breeds_list_recycler_view).apply {
-            adapter = BreedAdapter(breedsSubject, breedClicksSubject::onNext)
-            layoutManager = LinearLayoutManager(context)
+
+        val composeView = view.findViewById<ComposeView>(R.id.compose_view)
+
+        composeView.setContent {
+            BreedsListScreen(viewModel)
         }
-    }
-
-    override fun showBreeds(dogs: List<Breed>) {
-        breedsSubject.onNext(dogs)
-    }
-
-    override fun showError(error: Throwable) {
-        Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_LONG).show()
-    }
-
-    override val breedClicks: Observable<Breed> = breedClicksSubject.hide()
-}
-
-private class BreedViewHolder(private val title: TextView) : ViewHolder(title) {
-    fun setTitle(text: String) {
-        title.text = text
-    }
-
-    fun setOnClickListener(onClick: () -> Unit) {
-        title.setOnClickListener { onClick() }
     }
 }
 
-private class BreedAdapter(
-    private val breeds: Observable<List<Breed>>,
-    private val onBreedClick: (Breed) -> Unit
-) :
-    RecyclerView.Adapter<BreedViewHolder>() {
-    private val serialDisposable = SerialDisposable()
-    private var data = emptyList<Breed>()
+@Composable
+private fun BreedsListScreen(
+    viewModel: BreedsListViewModel,
+) {
+    val state by viewModel.state.collectAsState(BreedsListState())
+    val action by viewModel.action.collectAsStateWithLifecycle(null)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BreedViewHolder {
-        return TextView(parent.context).apply {
-            setPadding(36)
-        }.let(::BreedViewHolder)
-    }
-
-    override fun getItemCount(): Int {
-        return data.size
-    }
-
-    override fun onBindViewHolder(holder: BreedViewHolder, position: Int) {
-        holder.setTitle(data[position].name)
-        holder.setOnClickListener {
-            onBreedClick(data[position])
+    LaunchedEffect(action) {
+        when (action) {
+            is GoToBreedDetails -> {}
+            null -> {}
         }
     }
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
-        breeds.subscribe(::onData).also(serialDisposable::set)
-    }
-
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        super.onDetachedFromRecyclerView(recyclerView)
-        serialDisposable.dispose()
-    }
-
-    private fun onData(newData: List<Breed>) {
-        data = newData
-        notifyDataSetChanged()
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        items(state.breeds.count()) { index ->
+            Text(
+                modifier = Modifier
+                    .clickable {
+                        viewModel.onIntent(BreedSelected(state.breeds[index]))
+                    }
+                    .padding(36.dp),
+                text = state.breeds[index].name
+            )
+        }
     }
 }

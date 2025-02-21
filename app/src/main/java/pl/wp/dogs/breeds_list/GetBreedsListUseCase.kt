@@ -11,7 +11,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import javax.inject.Inject
 
-// TODO: move to shared module
 @Serializable
 private data class ResponseBody(
     val message: Map<String, List<String>>
