@@ -23,10 +23,14 @@ class GetBreedsListUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<List<Breed>> = flow {
         val request = buildRequest()
-        val response = okHttpClient.newCall(request).execute().body!!.string()
-        val responseBody = json.decodeFromString<ResponseBody>(response)
+        val response = okHttpClient.newCall(request).execute()
 
-        emit(responseBody.message.keys.map(::Breed))
+        response.body?.use { responseBody ->
+            val rawResponse = responseBody.string()
+            val parsedResponse = json.decodeFromString<ResponseBody>(rawResponse)
+
+            emit(parsedResponse.message.keys.map(::Breed))
+        } ?: throw IllegalStateException("Response body is null")
     }.flowOn(Dispatchers.IO)
 
     fun reportError(error: Throwable): Flow<Unit> = flow {

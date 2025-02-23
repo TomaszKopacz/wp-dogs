@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import pl.wp.dogs.breeds_list.BreedsListAction.GoToBreedDetails
 import pl.wp.dogs.breeds_list.BreedsListIntent.BreedSelected
 import pl.wp.dogs.breeds_list.BreedsListState.Error
+import pl.wp.dogs.breeds_list.BreedsListState.Loading
 import pl.wp.dogs.breeds_list.BreedsListState.Success
 import pl.wp.dogs.model.Breed
 import javax.inject.Inject
@@ -36,16 +37,15 @@ internal class BreedsListViewModel @Inject constructor(
     private val getBreedsListUseCase: GetBreedsListUseCase,
 ) : ViewModel() {
 
-    private var _state = MutableStateFlow<BreedsListState>(BreedsListState.Loading)
+    private var _state = MutableStateFlow<BreedsListState>(Loading)
     val state: Flow<BreedsListState> = _state
 
     private var _action = MutableSharedFlow<BreedsListAction>()
     val action: Flow<BreedsListAction> = _action
 
-    init {
+    fun fetchBreedsList() {
         viewModelScope.launch {
             getBreedsListUseCase()
-                .flowOn(Dispatchers.IO)
                 .catch { error ->
                     emitState(Error)
                     reportBreedsListError(error)
@@ -65,11 +65,11 @@ internal class BreedsListViewModel @Inject constructor(
 
     private fun reportBreedsListError(error: Throwable): Flow<Unit> =
         getBreedsListUseCase.reportError(error)
-            .flowOn(Dispatchers.IO)
             .catch {
                 emitState(Error)
                 emit(Unit)
             }
+            .flowOn(Dispatchers.IO)
 
     private fun emitState(state: BreedsListState) =
         viewModelScope.launch(Dispatchers.Main) {

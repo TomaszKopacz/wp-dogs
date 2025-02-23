@@ -60,6 +60,10 @@ private fun BreedsListScreen(
     val state by viewModel.state.collectAsState(Loading)
     val action by viewModel.action.collectAsStateWithLifecycle(null)
 
+    LaunchedEffect(Unit) {
+        viewModel.fetchBreedsList()
+    }
+
     LaunchedEffect(action) {
         action?.let {
             when (it) {
