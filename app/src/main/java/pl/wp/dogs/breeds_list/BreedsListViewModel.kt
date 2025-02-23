@@ -12,12 +12,15 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import pl.wp.dogs.breeds_list.BreedsListAction.GoToBreedDetails
 import pl.wp.dogs.breeds_list.BreedsListIntent.BreedSelected
+import pl.wp.dogs.breeds_list.BreedsListState.Error
+import pl.wp.dogs.breeds_list.BreedsListState.Success
 import javax.inject.Inject
 
-internal data class BreedsListState(
-    val breeds: List<Breed> = emptyList(),
-    val isError: Boolean = false,
-)
+internal sealed class BreedsListState {
+    data object Loading : BreedsListState()
+    data class Success(val breeds: List<Breed> = emptyList()) : BreedsListState()
+    data object Error : BreedsListState()
+}
 
 internal sealed class BreedsListIntent {
     data class BreedSelected(val breed: Breed) : BreedsListIntent()
@@ -32,7 +35,7 @@ internal class BreedsListViewModel @Inject constructor(
     private val getBreedsListUseCase: GetBreedsListUseCase,
 ) : ViewModel() {
 
-    private var _state = MutableStateFlow(BreedsListState())
+    private var _state = MutableStateFlow<BreedsListState>(BreedsListState.Loading)
     val state: Flow<BreedsListState> = _state
 
     private var _action = MutableSharedFlow<BreedsListAction>()
@@ -43,14 +46,14 @@ internal class BreedsListViewModel @Inject constructor(
             getBreedsListUseCase()
                 .flowOn(Dispatchers.IO)
                 .catch { error ->
-                    emitState { state -> state.copy(isError = true) }
+                    emitState(Error)
                     reportBreedsListError(error)
                 }
                 .catch {
-                    emitState { state -> state.copy(isError = true) }
+                    emitState(Error)
                 }
                 .collect { breeds ->
-                    emitState { state -> state.copy(breeds = breeds) }
+                    emitState(Success(breeds))
                 }
         }
     }
@@ -63,13 +66,13 @@ internal class BreedsListViewModel @Inject constructor(
         getBreedsListUseCase.reportError(error)
             .flowOn(Dispatchers.IO)
             .catch {
-                emitState { it.copy(isError = true) }
+                emitState(Error)
                 emit(Unit)
             }
 
-    private fun emitState(transform: (BreedsListState) -> BreedsListState) =
+    private fun emitState(state: BreedsListState) =
         viewModelScope.launch(Dispatchers.Main) {
-            _state.emit(transform(_state.value))
+            _state.value = state
         }
 
     private fun emitAction(action: BreedsListAction) =

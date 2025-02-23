@@ -1,35 +1,26 @@
-package pl.wp.dogs.breeds_list
+package pl.wp.di
 
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
+import javax.inject.Singleton
 
 @Module
-@InstallIn(ActivityComponent::class)
+@InstallIn(SingletonComponent::class)
 abstract class BreedsListModule {
-    @Binds
-    abstract fun bindRouting(routing: BreedsListRouting): BreedsListContract.Routing
-
     companion object {
         @Provides
-        fun provideGetBreedsListUseCase(
-            okHttpClient: OkHttpClient,
-            json: Json
-        ): GetBreedsListUseCase {
-            return GetBreedsListUseCase(okHttpClient, json)
-        }
-
-        @Provides
+        @Singleton
         fun provideOkHttpClient(): OkHttpClient {
             return OkHttpClient.Builder()
                 .build()
         }
 
         @Provides
+        @Singleton
         fun provideJson(): Json {
             return Json {
                 ignoreUnknownKeys = true
