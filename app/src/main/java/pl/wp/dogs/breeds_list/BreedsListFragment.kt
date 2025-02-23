@@ -2,7 +2,6 @@ package pl.wp.dogs.breeds_list
 
 import android.os.Bundle
 import android.view.View
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,6 +30,7 @@ import pl.wp.dogs.breeds_list.BreedsListState.Error
 import pl.wp.dogs.breeds_list.BreedsListState.Loading
 import pl.wp.dogs.breeds_list.BreedsListState.Success
 import pl.wp.dogs.model.Breed
+import pl.wp.dogs.util.rippleClickable
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -106,7 +106,7 @@ private fun BreedsListContent(
 
             Text(
                 modifier = Modifier
-                    .clickable { onBreedSelected(breed) }
+                    .rippleClickable { onBreedSelected(breed) }
                     .fillMaxWidth()
                     .padding(36.dp),
                 text = breed.name
