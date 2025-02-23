@@ -46,29 +46,27 @@ android {
 
 dependencies {
     kapt(libs.hilt.compiler)
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.fragment)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.rxjava)
-    implementation(libs.okhttp)
-    implementation(libs.hilt.android)
     implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(libs.hilt.navigation.fragment)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.rxjava.android)
+
     implementation(libs.compose.ui)
-    implementation(libs.compose.foundation)
     implementation(libs.compose.material3)
+    implementation(libs.compose.foundation)
+
+    implementation(libs.okhttp)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.material)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
-
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }
