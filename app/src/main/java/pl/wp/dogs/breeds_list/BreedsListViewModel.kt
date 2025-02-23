@@ -14,6 +14,7 @@ import pl.wp.dogs.breeds_list.BreedsListAction.GoToBreedDetails
 import pl.wp.dogs.breeds_list.BreedsListIntent.BreedSelected
 import pl.wp.dogs.breeds_list.BreedsListState.Error
 import pl.wp.dogs.breeds_list.BreedsListState.Success
+import pl.wp.dogs.model.Breed
 import javax.inject.Inject
 
 internal sealed class BreedsListState {

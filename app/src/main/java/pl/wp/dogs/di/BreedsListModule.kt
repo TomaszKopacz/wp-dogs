@@ -1,4 +1,4 @@
-package pl.wp.di
+package pl.wp.dogs.di
 
 import dagger.Module
 import dagger.Provides

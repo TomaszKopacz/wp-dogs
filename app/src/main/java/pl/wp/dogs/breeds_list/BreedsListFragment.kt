@@ -30,6 +30,7 @@ import pl.wp.dogs.breeds_list.BreedsListIntent.BreedSelected
 import pl.wp.dogs.breeds_list.BreedsListState.Error
 import pl.wp.dogs.breeds_list.BreedsListState.Loading
 import pl.wp.dogs.breeds_list.BreedsListState.Success
+import pl.wp.dogs.model.Breed
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -37,13 +38,16 @@ class BreedsListFragment @Inject constructor() : Fragment(R.layout.fragment_bree
 
     private val viewModel: BreedsListViewModel by viewModels()
 
+    @Inject
+    lateinit var navigationManager: NavigationManager
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val composeView = view.findViewById<ComposeView>(R.id.compose_view)
 
         composeView.setContent {
-            BreedsListScreen(viewModel)
+            BreedsListScreen(viewModel, navigationManager)
         }
     }
 }
@@ -51,14 +55,16 @@ class BreedsListFragment @Inject constructor() : Fragment(R.layout.fragment_bree
 @Composable
 private fun BreedsListScreen(
     viewModel: BreedsListViewModel,
+    navigationManager: NavigationManager,
 ) {
     val state by viewModel.state.collectAsState(Loading)
     val action by viewModel.action.collectAsStateWithLifecycle(null)
 
     LaunchedEffect(action) {
-        when (action) {
-            is GoToBreedDetails -> {}
-            null -> {}
+        action?.let {
+            when (it) {
+                is GoToBreedDetails -> navigationManager.goToBreed(it.breed)
+            }
         }
     }
 

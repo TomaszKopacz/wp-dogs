@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import pl.wp.dogs.model.Breed
 import javax.inject.Inject
 
 @Serializable
