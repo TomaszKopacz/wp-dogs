@@ -1,4 +1,4 @@
-package pl.wp.dogs.breeds_list
+package pl.wp.dogs.navigation
 
 import android.content.Context
 import android.os.Bundle
@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import dagger.hilt.android.qualifiers.ActivityContext
 import pl.wp.dogs.breed_details.BreedFragment
+import pl.wp.dogs.breeds_list.BreedsListFragment
 import pl.wp.dogs.model.Breed
 import javax.inject.Inject
 import javax.inject.Provider

@@ -17,7 +17,7 @@ private data class ResponseBody(
     val message: Map<String, List<String>>
 )
 
-class GetBreedsListUseCase @Inject constructor(
+internal class GetBreedsListUseCase @Inject constructor(
     private val okHttpClient: OkHttpClient,
     private val json: Json
 ) {

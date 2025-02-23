@@ -30,6 +30,7 @@ import pl.wp.dogs.breeds_list.BreedsListState.Error
 import pl.wp.dogs.breeds_list.BreedsListState.Loading
 import pl.wp.dogs.breeds_list.BreedsListState.Success
 import pl.wp.dogs.model.Breed
+import pl.wp.dogs.navigation.NavigationManager
 import pl.wp.dogs.util.rippleClickable
 import javax.inject.Inject
 
